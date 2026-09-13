@@ -1,0 +1,15 @@
+{
+  "name": "iq-bot",
+  "version": "1.0.0",
+  "description": "IQ Test Application",
+  "main": "index.html",
+  "scripts": {
+    "build": "bash build.sh",
+    "sync": "npx cap sync android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/cli": "^8.5.2",
+    "@capacitor/core": "^8.5.2"
+  }
+}

