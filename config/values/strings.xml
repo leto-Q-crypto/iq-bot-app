@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">IQ Test</string>
+    <string name="title_activity_main">IQ Test</string>
     <string name="accessibility_service_description">IQ Test accessibility service</string>
 </resources>
