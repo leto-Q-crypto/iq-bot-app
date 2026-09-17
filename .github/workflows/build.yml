@@ -24,7 +24,7 @@ jobs:
         with:
           distribution: temurin
           java-version: "17"
-          cache: gradle
+          
 
       - name: Install npm dependencies
         run: npm install
