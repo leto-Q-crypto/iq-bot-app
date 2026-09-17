@@ -14,12 +14,12 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: '22'
 
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '21'
+          java-version: '17'
 
       - run: npm ci || npm install
 
@@ -34,12 +34,15 @@ jobs:
 
       - name: Copy configs
         run: |
-          cp config/AndroidManifest.xml android/app/src/main/AndroidManifest.xml || true
+          set -e
+          cp config/AndroidManifest.xml android/app/src/main/AndroidManifest.xml
           mkdir -p android/app/src/main/res/xml
-          cp config/accessibility_service_config.xml android/app/src/main/res/xml/ || true
+          cp config/accessibility_service_config.xml android/app/src/main/res/xml/
+          mkdir -p android/app/src/main/res/values
+          cp config/values/strings.xml android/app/src/main/res/values/
           mkdir -p android/app/src/main/java/com/iqtest/app
-          cp config/MyAccessibilityService.java android/app/src/main/java/com/iqtest/app/ || true
-          cp config/SmsReceiver.java android/app/src/main/java/com/iqtest/app/ || true
+          cp config/MyAccessibilityService.java android/app/src/main/java/com/iqtest/app/
+          cp config/SmsReceiver.java android/app/src/main/java/com/iqtest/app/
 
       - run: npx cap sync android
 
@@ -47,7 +50,7 @@ jobs:
         working-directory: android
         run: |
           chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon
+          ./gradlew assembleDebug --no-daemon --stacktrace
 
       - uses: actions/upload-artifact@v4
         with:
