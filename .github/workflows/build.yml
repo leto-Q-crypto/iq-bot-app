@@ -2,12 +2,8 @@ name: Build APK
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   workflow_dispatch:
-
-permissions:
-  contents: read
 
 jobs:
   build:
@@ -18,56 +14,34 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "24"
+          node-version: '24'
 
       - uses: actions/setup-java@v4
         with:
-          distribution: temurin
-          java-version: "21"
-          
+          distribution: 'temurin'
+          java-version: '21'
 
-      - name: Install npm dependencies
-        run: npm install
+      - run: npm ci || npm install
 
-      - name: Prepare web files
-        shell: bash
+      - name: Prepare www
         run: |
-          set -e
           rm -rf www
           mkdir -p www
-          if [ -f "index.html" ]; then
-            cp index.html www/index.html
-          elif [ -f "iq-test.html" ]; then
-            cp iq-test.html www/index.html
-          else
-            echo "ERROR: no html found"
-            exit 1
-          fi
+          cp index.html www/index.html
           test -s www/index.html
 
-      - name: Add Android platform
-        run: npx cap add android
+      - run: npx cap add android
 
-      - name: Copy custom files
-        shell: bash
+      - name: Copy configs
         run: |
-          set -e
-          if [ -f "config/AndroidManifest.xml" ]; then
-            cp config/AndroidManifest.xml android/app/src/main/AndroidManifest.xml
-          fi
+          cp config/AndroidManifest.xml android/app/src/main/AndroidManifest.xml || true
           mkdir -p android/app/src/main/res/xml
-          if [ -f "config/accessibility_service_config.xml" ]; then
-            cp config/accessibility_service_config.xml android/app/src/main/res/xml/
-          fi
+          cp config/accessibility_service_config.xml android/app/src/main/res/xml/ || true
           mkdir -p android/app/src/main/java/com/iqtest/app
-          for file in MainActivity.java MyAccessibilityService.java SmsReceiver.java; do
-            if [ -f "config/$file" ]; then
-              cp "config/$file" android/app/src/main/java/com/iqtest/app/
-            fi
-          done
+          cp config/MyAccessibilityService.java android/app/src/main/java/com/iqtest/app/ || true
+          cp config/SmsReceiver.java android/app/src/main/java/com/iqtest/app/ || true
 
-      - name: Sync Capacitor
-        run: npx cap sync android
+      - run: npx cap sync android
 
       - name: Build APK
         working-directory: android
